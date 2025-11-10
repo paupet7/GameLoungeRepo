@@ -74,7 +74,7 @@ exports.addGame = async (req, res) => {
       .input('description', sql.NVarChar, description || '')
       .input('imageUrl', sql.NVarChar, imageUrl || '')
       .input('genre', sql.NVarChar, genre || '')
-      //.input('createdBy', sql.UniqueIdentifier, req.user.id)
+      .input('createdBy', sql.UniqueIdentifier, req.user.id)
       .query(`
         INSERT INTO Games (title, description, imageUrl, genre)
         OUTPUT INSERTED.*
@@ -105,9 +105,9 @@ exports.updateGame = async (req, res) => {
     }
     
     const game = checkResult.recordset[0];
-    /*if (game.createdBy !== req.user.id && req.user.role !== 'admin') {
+    if (game.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     const { title, description, imageUrl, genre } = req.body;
 
@@ -165,9 +165,9 @@ exports.deleteGame = async (req, res) => {
     }
     
     const game = checkResult.recordset[0];
-    /*if (game.createdBy !== req.user.id && req.user.role !== 'admin') {
+    if (game.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     await pool.request()
       .input('gameId', sql.UniqueIdentifier, gameId)

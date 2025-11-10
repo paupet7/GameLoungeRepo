@@ -71,7 +71,7 @@ exports.addComment = async (req, res) => {
     const result = await pool.request()
       .input('themeId', sql.UniqueIdentifier, themeId)
       .input('gameId', sql.UniqueIdentifier, gameId)
-      .input('userId',  "1cbb1b0a-eb2b-45b5-8252-96bbc9005261"/*sql.UniqueIdentifier, req.user.id*/)
+      .input('userId',  sql.UniqueIdentifier, req.user.id)
       .input('content', sql.NVarChar, content)
       .query(`
         INSERT INTO Comments (themeId, gameId, userId, content)
@@ -102,9 +102,9 @@ exports.updateComment = async (req, res) => {
     }
     
     const comment = checkResult.recordset[0];
-    /*if (comment.userId !== req.user.id && req.user.role !== 'admin') {
+    if (comment.userId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     const { content } = req.body;
     
@@ -146,9 +146,9 @@ exports.deleteComment = async (req, res) => {
     }
     
     const comment = checkResult.recordset[0];
-   /* if (comment.userId !== req.user.id && req.user.role !== 'admin') {
+    if (comment.userId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     await pool.request()
       .input('commentId', sql.UniqueIdentifier, commentId)
