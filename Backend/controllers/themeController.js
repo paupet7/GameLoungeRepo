@@ -79,6 +79,7 @@ exports.addTheme = async (req, res) => {
       .input('gameId', sql.UniqueIdentifier, gameId)
       .input('title', sql.NVarChar, title)
       .input('description', sql.NVarChar, description || '')
+      .input('createdBy', sql.UniqueIdentifier, req.user.id)
       .query(`
         INSERT INTO Themes (gameId, title, description)
         OUTPUT INSERTED.*
@@ -108,9 +109,9 @@ exports.updateTheme = async (req, res) => {
     }
     
     const theme = checkResult.recordset[0];
-    /*if (theme.createdBy !== req.user.id && req.user.role !== 'admin') {
+    if (theme.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     const { title, description } = req.body;
 
@@ -162,9 +163,9 @@ exports.deleteTheme = async (req, res) => {
     }
     
     const theme = checkResult.recordset[0];
-    /*if (theme.createdBy !== req.user.id && req.user.role !== 'admin') {
+    if (theme.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }*/
+    }
     
     await pool.request()
       .input('themeId', sql.UniqueIdentifier, themeId)
