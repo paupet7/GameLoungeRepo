@@ -76,9 +76,9 @@ exports.addGame = async (req, res) => {
       .input('genre', sql.NVarChar, genre || '')
       .input('createdBy', sql.UniqueIdentifier, req.user.id)
       .query(`
-        INSERT INTO Games (title, description, imageUrl, genre)
+        INSERT INTO Games (title, description, imageUrl, genre, createdBy)
         OUTPUT INSERTED.*
-        VALUES (@title, @description, @imageUrl, @genre)
+        VALUES (@title, @description, @imageUrl, @genre, @createdBy)
       `);
     
     
@@ -117,7 +117,8 @@ exports.updateGame = async (req, res) => {
 
     const existing = await pool.request()
       .input('title', sql.NVarChar, title)
-      .query('SELECT id FROM Games WHERE title = @title');
+      .input('gameId', sql.UniqueIdentifier, gameId)
+      .query('SELECT id FROM Games WHERE title = @title AND id != @gameId');
     
     if (existing.recordset.length > 0) {
       return res.status(422).json({ error: 'A game with this title already exists.' });
@@ -155,10 +156,10 @@ exports.deleteGame = async (req, res) => {
     const gameId = req.params.gameId;
     const pool = await getConnection();
     
-    // Check permission
+    // Patikrinti ar žaidimas egzistuoja
     const checkResult = await pool.request()
       .input('gameId', sql.UniqueIdentifier, gameId)
-      .query('SELECT createdBy FROM Games WHERE id = @gameId');
+      .query('SELECT id FROM Games WHERE id = @gameId');
     
     if (checkResult.recordset.length === 0) {
       return res.status(404).json({ error: 'Game not found' });

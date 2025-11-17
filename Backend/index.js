@@ -26,8 +26,7 @@ app.use('/api/games/:gameId/themes', themeRoutes);
 app.use('/api/games/:gameId/themes/:themeId/comments', commentRoutes);
 
 
-
-
+///////// DOUBLE(refresh) TOKEN, LOGOUT add
 
 app.get('/ping', (req, res) => {
   res.send('pong');

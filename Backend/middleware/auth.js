@@ -1,12 +1,28 @@
 const jwt = require('jsonwebtoken');
 
-// Generate JWT token
-const generateToken = (user) => {
+const generateAccessToken = (user) => {
   return jwt.sign(
     { id: user.id, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: '15m' }  // 15 minučių
   );
+};
+
+// Generate Refresh Token (ilgas galiojimas)
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user.id },
+    process.env.JWT_REFRESH_SECRET,  // Atskiras secret!
+    { expiresIn: '7d' }  // 7 dienos
+  );
+};
+
+// Generate both tokens
+const generateTokens = (user) => {
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+  
+  return { accessToken, refreshToken };
 };
 
 // Authenticate user
@@ -22,7 +38,21 @@ const authenticate = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
+   if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ 
+        error: 'Token expired',
+        message: 'Please refresh your token'
+      });
+    }
     res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+const verifyRefreshToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  } catch (error) {
+    return null;
   }
 };
 
@@ -43,7 +73,10 @@ const isClientOrAdmin = (req, res, next) => {
 };
 
 module.exports = {
-  generateToken,
+  generateTokens,
+  verifyRefreshToken,
+  generateAccessToken,
+  generateRefreshToken,
   authenticate,
   isAdmin,
   isClientOrAdmin

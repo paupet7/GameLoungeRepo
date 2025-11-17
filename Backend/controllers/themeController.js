@@ -67,9 +67,10 @@ exports.addTheme = async (req, res) => {
     
     const pool = await getConnection();
 
-    const existing = await pool.request()
+     const existing = await pool.request()
       .input('title', sql.NVarChar, title)
-      .query('SELECT id FROM Themes WHERE title = @title');
+      .input('gameId', sql.UniqueIdentifier, gameId)
+      .query('SELECT id FROM Themes WHERE title = @title AND gameId = @gameId');
     
     if (existing.recordset.length > 0) {
       return res.status(422).json({ error: 'A theme with this title already exists.' });
@@ -81,9 +82,9 @@ exports.addTheme = async (req, res) => {
       .input('description', sql.NVarChar, description || '')
       .input('createdBy', sql.UniqueIdentifier, req.user.id)
       .query(`
-        INSERT INTO Themes (gameId, title, description)
+        INSERT INTO Themes (gameId, title, description, createdBy)
         OUTPUT INSERTED.*
-        VALUES (@gameId, @title, @description)
+        VALUES (@gameId, @title, @description, @createdBy)
       `);
     
     res.status(201).json(result.recordset[0]);
@@ -97,12 +98,13 @@ exports.addTheme = async (req, res) => {
 exports.updateTheme = async (req, res) => {
   try {
     const themeId = req.params.themeId;
+    const gameId = req.params.gameId;
     const pool = await getConnection();
     
     // Check permission
-    const checkResult = await pool.request()
+     const checkResult = await pool.request()
       .input('themeId', sql.UniqueIdentifier, themeId)
-      .query('SELECT createdBy FROM Themes WHERE id = @themeId');
+      .query('SELECT id FROM Themes WHERE id = @themeId');
     
     if (checkResult.recordset.length === 0) {
       return res.status(404).json({ error: 'Theme not found' });
@@ -119,9 +121,12 @@ exports.updateTheme = async (req, res) => {
       return res.status(400).json({ error: 'Title is required and must be a non-empty string.' });
     }
 
+   // Patikrinti ar toks pavadinimas jau egzistuoja (išskyrus dabartinę temą)
     const existing = await pool.request()
       .input('title', sql.NVarChar, title)
-      .query('SELECT id FROM Themes WHERE title = @title');
+      .input('themeId', sql.UniqueIdentifier, themeId)
+      .input('gameId', sql.UniqueIdentifier, gameId)
+      .query('SELECT id FROM Themes WHERE title = @title AND gameId = @gameId AND id != @themeId');
     
     if (existing.recordset.length > 0) {
       return res.status(422).json({ error: 'A Theme with this title already exists.' });
@@ -156,7 +161,7 @@ exports.deleteTheme = async (req, res) => {
     // Check permission
     const checkResult = await pool.request()
       .input('themeId', sql.UniqueIdentifier, themeId)
-      .query('SELECT createdBy FROM Themes WHERE id = @themeId');
+      .query('SELECT id FROM Themes WHERE id = @themeId');
     
     if (checkResult.recordset.length === 0) {
       return res.status(404).json({ error: 'Theme not found' });

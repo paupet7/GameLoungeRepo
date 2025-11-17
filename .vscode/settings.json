@@ -1,0 +1,7 @@
+{
+    "appService.deploySubpath": "Backend",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
+}
