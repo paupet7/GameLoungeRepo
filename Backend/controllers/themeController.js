@@ -166,17 +166,17 @@ exports.deleteTheme = async (req, res) => {
     if (checkResult.recordset.length === 0) {
       return res.status(404).json({ error: 'Theme not found' });
     }
-    
+    /*
     const theme = checkResult.recordset[0];
     if (theme.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }
+    }*/
     
     await pool.request()
       .input('themeId', sql.UniqueIdentifier, themeId)
       .query('DELETE FROM Themes WHERE id = @themeId');
     
-    res.status(200).Send();
+    res.status(200).send();
   } catch (error) {
     console.error('Delete theme error:', error);
     res.status(500).json({ error: 'Failed to delete theme' });

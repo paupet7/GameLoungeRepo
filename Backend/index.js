@@ -12,6 +12,7 @@ const authRoutes = require("./routes/authRoutes");
 const gameRoutes = require("./routes/gameRoutes");
 const themeRoutes = require("./routes/themeRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/games", gameRoutes);
 app.use('/api/games/:gameId/themes', themeRoutes);
 app.use('/api/games/:gameId/themes/:themeId/comments', commentRoutes);
+app.use("/api/users", userRoutes);
 
 
 ///////// DOUBLE(refresh) TOKEN, LOGOUT add

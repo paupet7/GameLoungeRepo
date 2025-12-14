@@ -8,11 +8,11 @@ const generateAccessToken = (user) => {
   );
 };
 
-// Generate Refresh Token (ilgas galiojimas)
+
 const generateRefreshToken = (user) => {
   return jwt.sign(
     { id: user.id },
-    process.env.JWT_REFRESH_SECRET,  // Atskiras secret!
+    process.env.JWT_REFRESH_SECRET, 
     { expiresIn: '7d' }  // 7 dienos
   );
 };

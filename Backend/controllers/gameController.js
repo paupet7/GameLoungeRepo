@@ -104,10 +104,10 @@ exports.updateGame = async (req, res) => {
       return res.status(404).json({ error: 'Game not found' });
     }
     
-    const game = checkResult.recordset[0];
+    /*const game = checkResult.recordset[0];
     if (game.createdBy !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No permission' });
-    }
+    }*/
     
     const { title, description, imageUrl, genre } = req.body;
 

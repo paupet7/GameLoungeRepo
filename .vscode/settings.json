@@ -3,5 +3,6 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/73b9e1dd-f134-4fc4-92c1-2638e6f69adc/resourceGroups/gameloungesaitynai/providers/Microsoft.Web/sites/gamelounge-api-paupet"
 }
