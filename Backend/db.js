@@ -26,11 +26,11 @@ async function getConnection() {
   try {
     if (!pool) {
       pool = await sql.connect(config);
-      console.log('✅ Connected to Azure SQL Database');
+      console.log(' Connected to Azure SQL Database');
     }
     return pool;
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    console.error(' Database connection failed:', error);
     throw error;
   }
 }
