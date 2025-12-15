@@ -18,8 +18,11 @@ const app = express();
 
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: [
+    "https://game-lounge-repo.vercel.app/"
+  ],
+}));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/games", gameRoutes);
